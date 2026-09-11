@@ -24,7 +24,12 @@ from .const import (
 )
 from .coordinator import AxisSpeakerCoordinator
 
-PLATFORMS: list[Platform] = [Platform.BUTTON, Platform.NUMBER, Platform.SENSOR]
+PLATFORMS: list[Platform] = [
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.NUMBER,
+    Platform.SENSOR,
+]
 
 CONFIGURE_MQTT_SCHEMA = vol.Schema(
     {

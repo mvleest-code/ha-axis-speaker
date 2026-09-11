@@ -40,6 +40,7 @@ class AxisSpeakerDeviceInfo:
     prod_short_name: str
     prod_number: str
     firmware_version: str
+    mac_address: str | None = None
 
 
 @dataclass
@@ -114,11 +115,16 @@ class AxisSpeakerClient:
         brand = await self._get_params("Brand")
         firmware = await self._get_params("Properties.Firmware")
         try:
+            network = await self._get_params("Network.eth0")
+        except AxisSpeakerError:
+            network = {}
+        try:
             return AxisSpeakerDeviceInfo(
                 prod_full_name=brand["Brand.ProdFullName"],
                 prod_short_name=brand["Brand.ProdShortName"],
                 prod_number=brand["Brand.ProdNbr"],
                 firmware_version=firmware["Properties.Firmware.Version"],
+                mac_address=network.get("Network.eth0.MACAddress"),
             )
         except KeyError as err:
             raise AxisSpeakerError(f"Unexpected Brand/Firmware response: {err}") from err

@@ -3,8 +3,18 @@
     "step": {
       "user": {
         "title": "Connect to Axis speaker",
+        "description": "Pick a discovered device or type an IP address.",
         "data": {
           "host": "Host (IP address)",
+          "username": "Username",
+          "password": "Password",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Discovered Axis device",
+        "description": "Set up {name} ({host})?",
+        "data": {
           "username": "Username",
           "password": "Password",
           "verify_ssl": "Verify SSL certificate"
