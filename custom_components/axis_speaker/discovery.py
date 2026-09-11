@@ -14,6 +14,7 @@ host, so callers should treat an empty result the same as "scan failed".
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import logging
 
 from homeassistant.components import zeroconf as ha_zeroconf
@@ -23,6 +24,23 @@ _LOGGER = logging.getLogger(__name__)
 
 AXIS_SERVICE_TYPES = ["_axis-video._tcp.local.", "_axis-audiosite._tcp.local."]
 SCAN_TIMEOUT_SECONDS = 3.0
+
+
+def _pick_routable_address(addresses: list[str]) -> str | None:
+    """Prefer a normal LAN address over a link-local (169.254.0.0/16) one.
+
+    Confirmed against a real device: it advertises both its real DHCP/static
+    address and a self-assigned link-local fallback over mDNS - picking
+    whichever came first in the packet occasionally surfaced the unusable
+    169.254.x.x one instead of the real LAN IP.
+    """
+    for address in addresses:
+        try:
+            if not ipaddress.ip_address(address).is_link_local:
+                return address
+        except ValueError:
+            continue
+    return addresses[0] if addresses else None
 
 
 async def async_discover_axis_hosts(hass: HomeAssistant) -> dict[str, str]:
@@ -46,10 +64,10 @@ async def async_discover_axis_hosts(hass: HomeAssistant) -> dict[str, str]:
         try:
             info = AsyncServiceInfo(service_type, name)
             if await info.async_request(aiozc.zeroconf, 3000):
-                addresses = info.parsed_addresses()
-                if addresses:
+                address = _pick_routable_address(info.parsed_addresses())
+                if address:
                     friendly_name = name.split(f".{service_type}")[0]
-                    discovered[addresses[0]] = friendly_name
+                    discovered[address] = friendly_name
         except Exception:  # noqa: BLE001 - one bad record shouldn't kill the scan
             _LOGGER.debug("Failed resolving %s", name, exc_info=True)
 
