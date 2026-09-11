@@ -16,8 +16,12 @@ import httpx
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.components.zeroconf import ZeroconfServiceInfo
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+
+try:  # HA moved this in 2024.6; support both locations
+    from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
+except ImportError:  # pragma: no cover - older HA
+    from homeassistant.components.zeroconf import ZeroconfServiceInfo
 from homeassistant.helpers import selector
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.httpx_client import get_async_client
