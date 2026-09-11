@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Axis speaker",
+        "data": {
+          "host": "Host (IP address)",
+          "username": "Username",
+          "password": "Password",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password",
+      "cannot_connect": "Failed to connect to the speaker"
+    },
+    "abort": {
+      "already_configured": "This speaker is already configured"
+    }
+  },
+  "services": {
+    "configure_mqtt": {
+      "name": "Configure MQTT",
+      "description": "Point the speaker's built-in MQTT client at a broker and connect it.",
+      "fields": {
+        "host": { "name": "Broker host", "description": "IP address or hostname of the MQTT broker." },
+        "port": { "name": "Broker port", "description": "Usually 1883, or 8883 for TLS." },
+        "username": { "name": "Username", "description": "Optional broker username." },
+        "password": { "name": "Password", "description": "Optional broker password." },
+        "use_tls": { "name": "Use TLS", "description": "Connect over TLS instead of plain TCP." }
+      }
+    }
+  }
+}

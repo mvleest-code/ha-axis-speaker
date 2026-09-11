@@ -1,0 +1,45 @@
+configure_mqtt:
+  name: Configure MQTT
+  description: >-
+    Point the speaker's own built-in MQTT client at a broker and connect it.
+    Untested against a real broker - the request/response shape is inferred
+    from the device's own getClientStatus response, so verify it works
+    before relying on it.
+  fields:
+    host:
+      name: Broker host
+      description: IP address or hostname of the MQTT broker.
+      required: true
+      example: 192.168.1.50
+      selector:
+        text:
+    port:
+      name: Broker port
+      description: Usually 1883, or 8883 for TLS.
+      required: true
+      example: 1883
+      selector:
+        number:
+          min: 1
+          max: 65535
+          mode: box
+    username:
+      name: Username
+      description: Optional broker username.
+      required: false
+      selector:
+        text:
+    password:
+      name: Password
+      description: Optional broker password.
+      required: false
+      selector:
+        text:
+          type: password
+    use_tls:
+      name: Use TLS
+      description: Connect over TLS instead of plain TCP.
+      required: false
+      default: false
+      selector:
+        boolean:
