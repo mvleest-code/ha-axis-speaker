@@ -25,7 +25,7 @@ async def async_find_mirrored_pir_entity_id(hass: HomeAssistant, mac_address: st
     # instead, same as async_get_devices() the deprecation notice suggested.
     target = (dr.CONNECTION_NETWORK_MAC, dr.format_mac(mac_address))
     device = next(
-        (d for d in dev_reg.devices.values() if target in d.connections),
+        (d for d in dev_reg.devices if target in d.connections),
         None,
     )
     if device is None:
