@@ -18,8 +18,15 @@ async def async_find_mirrored_pir_entity_id(hass: HomeAssistant, mac_address: st
     dev_reg = dr.async_get(hass)
     ent_reg = er.async_get(hass)
 
-    device = dev_reg.async_get_device_by_connection(
-        (dr.CONNECTION_NETWORK_MAC, dr.format_mac(mac_address))
+    # async_get_device_by_connection() requires scoping to one config_entry_id
+    # on this HA version (a MAC is no longer globally unique across entries),
+    # but we deliberately don't know which entry owns the sibling `axis`
+    # integration's device - so scan all devices for a matching connection
+    # instead, same as async_get_devices() the deprecation notice suggested.
+    target = (dr.CONNECTION_NETWORK_MAC, dr.format_mac(mac_address))
+    device = next(
+        (d for d in dev_reg.devices.values() if target in d.connections),
+        None,
     )
     if device is None:
         return None
