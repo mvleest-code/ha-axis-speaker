@@ -70,9 +70,6 @@ class AxisSpeakerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             host = user_input[CONF_HOST]
-            await self.async_set_unique_id(host)
-            self._abort_if_unique_id_configured()
-
             device_info, error = await self._async_validate_and_create(
                 host,
                 user_input[CONF_USERNAME],
@@ -82,6 +79,15 @@ class AxisSpeakerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if error:
                 errors["base"] = error
             else:
+                # Keyed on MAC (like the zeroconf flow), not the host: an IP-keyed
+                # unique_id here left the two flows unable to recognise the same
+                # physical device, so zeroconf kept re-discovering an already
+                # configured speaker forever.
+                if device_info.mac_address:
+                    await self.async_set_unique_id(format_mac(device_info.mac_address))
+                else:
+                    await self.async_set_unique_id(host)
+                self._abort_if_unique_id_configured(updates={CONF_HOST: host})
                 return self.async_create_entry(title=device_info.prod_full_name, data=user_input)
 
         discovered = await async_discover_axis_hosts(self.hass)
