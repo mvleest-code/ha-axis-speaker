@@ -18,8 +18,8 @@ async def async_find_mirrored_pir_entity_id(hass: HomeAssistant, mac_address: st
     dev_reg = dr.async_get(hass)
     ent_reg = er.async_get(hass)
 
-    device = dev_reg.async_get_device(
-        connections={(dr.CONNECTION_NETWORK_MAC, dr.format_mac(mac_address))}
+    device = dev_reg.async_get_device_by_connection(
+        (dr.CONNECTION_NETWORK_MAC, dr.format_mac(mac_address))
     )
     if device is None:
         return None
